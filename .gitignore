@@ -3,3 +3,8 @@ build_logs/
 dockerfiles/STAR
 dockerfiles/featureCounts
 dockerfiles/subread-*
+dockerfiles/STAR
+dockerfiles/featureCounts
+dockerfiles/subread-*
+build_logs/
+sif/
