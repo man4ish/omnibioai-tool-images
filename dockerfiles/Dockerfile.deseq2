@@ -1,0 +1,10 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    r-base \
+    r-base-dev \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    && R -e "install.packages('BiocManager', repos='https://cran.r-project.org')" \
+    && R -e "BiocManager::install('DESeq2')"
+CMD ["Rscript", "-e", "library(DESeq2); cat('DESeq2 ready\n')"]

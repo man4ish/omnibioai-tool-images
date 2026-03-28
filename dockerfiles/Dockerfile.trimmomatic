@@ -1,0 +1,12 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    default-jre \
+    wget \
+    unzip \
+    && wget https://github.com/usadellab/Trimmomatic/releases/download/v0.39/Trimmomatic-0.39.zip \
+    && unzip Trimmomatic-0.39.zip \
+    && mv Trimmomatic-0.39 /opt/trimmomatic \
+    && echo '#!/bin/bash\njava -jar /opt/trimmomatic/trimmomatic-0.39.jar "$@"' > /usr/local/bin/trimmomatic \
+    && chmod +x /usr/local/bin/trimmomatic \
+    && rm Trimmomatic-0.39.zip
+CMD ["trimmomatic", "-version"]

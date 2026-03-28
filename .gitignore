@@ -1,2 +1,5 @@
 sif/*.sif
 build_logs/
+dockerfiles/STAR
+dockerfiles/featureCounts
+dockerfiles/subread-*

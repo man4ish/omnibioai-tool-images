@@ -1,0 +1,7 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y libgomp1 zlib1g
+COPY featureCounts /usr/local/bin/featureCounts
+COPY subread-align /usr/local/bin/subread-align
+COPY subread-buildindex /usr/local/bin/subread-buildindex
+RUN chmod +x /usr/local/bin/featureCounts /usr/local/bin/subread-align /usr/local/bin/subread-buildindex
+CMD ["featureCounts", "-v"]
