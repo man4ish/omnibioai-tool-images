@@ -9,9 +9,7 @@ RUN apt-get update && apt-get install -y \
     biopython \
     numpy \
     scipy \
-    dm-haiku \
-    ml-collections \
     absl-py \
-    && git clone https://github.com/google-deepmind/alphafold.git /app/alphafold \
-    && pip3 install --break-system-packages -r /app/alphafold/requirements.txt
-CMD ["python3", "-c", "print('AlphaFold2 ready')"]
+    ml-collections \
+    colabfold[alphafold-minus-jax]
+CMD ["python3", "-c", "import colabfold; print("ColabFold ready")"]
