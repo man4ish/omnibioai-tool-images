@@ -1,0 +1,10 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    libgomp1 \
+    liblapacke \
+    libopenblas0 \
+    zlib1g
+COPY plink2 /usr/local/bin/plink2
+RUN chmod +x /usr/local/bin/plink2 \
+    && ln -s /usr/local/bin/plink2 /usr/local/bin/plink
+CMD ["plink2", "--version"]

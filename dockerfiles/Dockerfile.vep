@@ -1,0 +1,17 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    perl \
+    cpanminus \
+    libdbi-perl \
+    libwww-perl \
+    libsqlite3-dev \
+    libz-dev \
+    build-essential \
+    bioperl \
+    libbio-perl-perl \
+    && cpanm --notest DBI DBD::SQLite JSON PerlIO::gzip Archive::Zip
+COPY vep /opt/vep
+RUN echo '#!/bin/bash' > /usr/local/bin/vep \
+    && echo 'exec perl /opt/vep/vep "$@"' >> /usr/local/bin/vep \
+    && chmod +x /usr/local/bin/vep
+CMD ["vep", "--help"]

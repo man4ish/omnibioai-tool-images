@@ -1,0 +1,12 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    default-jre \
+    wget \
+    unzip \
+    && wget https://snpeff-public.s3.amazonaws.com/versions/snpEff_latest_core.zip \
+    && unzip snpEff_latest_core.zip \
+    && mv snpEff /opt/snpeff \
+    && rm snpEff_latest_core.zip \
+    && printf '#!/bin/sh\nexec java -jar /opt/snpeff/snpEff.jar "$@"\n' > /usr/local/bin/snpEff \
+    && chmod +x /usr/local/bin/snpEff
+CMD ["snpEff", "-version"]

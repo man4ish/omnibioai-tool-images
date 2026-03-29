@@ -1,0 +1,10 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    libgomp1 \
+    zlib1g \
+    libbz2-1.0 \
+    liblzma5 \
+    libstdc++6
+COPY freebayes /usr/local/bin/freebayes
+RUN chmod +x /usr/local/bin/freebayes
+CMD ["freebayes", "--version"]

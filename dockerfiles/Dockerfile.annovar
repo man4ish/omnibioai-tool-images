@@ -1,0 +1,11 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    perl \
+    wget
+# ANNOVAR requires registration at http://annovar.openbioinformatics.org
+# Download manually and copy to /opt/annovar
+COPY annovar/ /opt/annovar/
+RUN chmod +x /opt/annovar/*.pl \
+    && ln -s /opt/annovar/table_annovar.pl /usr/local/bin/table_annovar.pl \
+    && ln -s /opt/annovar/annotate_variation.pl /usr/local/bin/annotate_variation.pl
+CMD ["table_annovar.pl", "--help"]
