@@ -1,0 +1,8 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    wget \
+    && wget https://github.com/pachterlab/kallisto/releases/download/v0.50.1/kallisto_linux-v0.50.1.tar.gz \
+    && tar -xzf kallisto_linux-v0.50.1.tar.gz \
+    && mv kallisto/kallisto /usr/local/bin/ \
+    && rm -rf kallisto kallisto_linux-v0.50.1.tar.gz
+CMD ["kallisto", "version"]

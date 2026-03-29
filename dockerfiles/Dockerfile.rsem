@@ -1,0 +1,6 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    rsem \
+    bowtie2 \
+    samtools
+CMD ["rsem-calculate-expression", "--version"]

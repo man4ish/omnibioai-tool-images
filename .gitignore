@@ -8,3 +8,4 @@ dockerfiles/featureCounts
 dockerfiles/subread-*
 build_logs/
 sif/
+dockerfiles/obsolete/
