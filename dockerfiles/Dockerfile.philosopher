@@ -1,0 +1,5 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y libgomp1 zlib1g
+COPY philosopher /usr/local/bin/philosopher
+RUN chmod +x /usr/local/bin/philosopher
+CMD ["philosopher", "version"]
