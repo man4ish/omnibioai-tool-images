@@ -1,10 +1,9 @@
 FROM ubuntu:24.04
 RUN apt-get update && apt-get install -y \
-    wget \
-    libgomp1 \
-    zlib1g \
-    && wget https://yanglab.westlake.edu.cn/software/gcta/bin/gcta-1.94.1-linux-kernel-3-x86_64.zip \
-    && unzip gcta-1.94.1-linux-kernel-3-x86_64.zip \
-    && mv gcta-1.94.1-linux-kernel-3-x86_64/gcta64 /usr/local/bin/ \
-    && rm -rf gcta-1.94.1-linux-kernel-3-x86_64*
-CMD ["gcta64", "--version"]
+    r-base \
+    r-base-dev \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    && R -e "install.packages('bigstatsr', repos='https://cran.r-project.org')"
+CMD ["Rscript", "-e", "library(bigstatsr); cat('bigstatsr ready\n')"]
