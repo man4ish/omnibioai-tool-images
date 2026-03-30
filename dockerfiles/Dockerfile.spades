@@ -1,0 +1,10 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    python3 \
+    libgomp1 \
+    zlib1g \
+    libbz2-1.0
+COPY spades.py /usr/local/bin/spades.py
+RUN chmod +x /usr/local/bin/spades.py \
+    && ln -s /usr/local/bin/spades.py /usr/local/bin/spades
+CMD ["spades.py", "--version"]
