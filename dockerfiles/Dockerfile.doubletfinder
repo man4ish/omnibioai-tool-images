@@ -1,0 +1,11 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    r-base \
+    r-base-dev \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    libhdf5-dev \
+    && R -e "install.packages(c('Seurat','remotes'), repos='https://cran.r-project.org')" \
+    && R -e "remotes::install_github('chris-mcginnis-ucsf/DoubletFinder')"
+CMD ["Rscript", "-e", "library(DoubletFinder); cat('DoubletFinder ready\n')"]

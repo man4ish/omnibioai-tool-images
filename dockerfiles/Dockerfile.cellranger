@@ -1,0 +1,10 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    wget \
+    bc \
+    && wget -O cellranger.tar.gz "https://cf.10xgenomics.com/releases/cell-exp/cellranger-8.0.1.tar.gz" \
+    && tar -xzf cellranger.tar.gz \
+    && mv cellranger-8.0.1 /opt/cellranger \
+    && ln -s /opt/cellranger/cellranger /usr/local/bin/cellranger \
+    && rm cellranger.tar.gz
+CMD ["cellranger", "--version"]
