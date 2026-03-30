@@ -1,0 +1,6 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y python3 samtools libgomp1
+COPY medaka_variant /usr/local/bin/medaka_variant
+RUN chmod +x /usr/local/bin/medaka_variant \
+    && ln -s /usr/local/bin/medaka_variant /usr/local/bin/medaka
+CMD ["medaka_variant", "--version"]

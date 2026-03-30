@@ -1,0 +1,9 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    perl \
+    libgomp1
+COPY TransDecoder.LongOrfs /usr/local/bin/TransDecoder.LongOrfs
+COPY TransDecoder.Predict /usr/local/bin/TransDecoder.Predict
+RUN chmod +x /usr/local/bin/TransDecoder.LongOrfs \
+    && chmod +x /usr/local/bin/TransDecoder.Predict
+CMD ["TransDecoder.LongOrfs", "--version"]

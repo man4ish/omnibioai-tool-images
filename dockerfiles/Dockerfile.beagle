@@ -1,0 +1,7 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    default-jre \
+    wget \
+    && wget https://faculty.washington.edu/browning/beagle/beagle.22Jul22.46e.jar \
+    && mv beagle.22Jul22.46e.jar /opt/beagle.jar
+CMD ["java", "-jar", "/opt/beagle.jar"]

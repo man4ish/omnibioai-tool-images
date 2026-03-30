@@ -1,0 +1,8 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    wget \
+    && wget https://mathgen.stats.ox.ac.uk/impute/impute_v2.3.2_x86_64_static.tgz \
+    && tar -xzf impute_v2.3.2_x86_64_static.tgz \
+    && mv impute_v2.3.2_x86_64_static/impute2 /usr/local/bin/ \
+    && rm -rf impute_v2.3.2_x86_64_static*
+CMD ["impute2", "-help"]

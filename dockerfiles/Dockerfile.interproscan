@@ -1,0 +1,10 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    default-jre \
+    wget \
+    && wget https://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/5.67-99.0/interproscan-5.67-99.0-64-bit.tar.gz \
+    && tar -xzf interproscan-5.67-99.0-64-bit.tar.gz \
+    && mv interproscan-5.67-99.0 /opt/interproscan \
+    && ln -s /opt/interproscan/interproscan.sh /usr/local/bin/interproscan.sh \
+    && rm interproscan-5.67-99.0-64-bit.tar.gz
+CMD ["interproscan.sh", "--version"]

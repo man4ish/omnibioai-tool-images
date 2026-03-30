@@ -1,0 +1,11 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    wget \
+    libgomp1 \
+    zlib1g \
+    && wget https://github.com/rgcgithub/regenie/releases/download/v3.6.gz/regenie_v3.6.gz_Linux_aarch64_Regenie_SSE.zip \
+    && unzip regenie_v3.6.gz_Linux_aarch64_Regenie_SSE.zip \
+    && mv regenie /usr/local/bin/ \
+    && chmod +x /usr/local/bin/regenie \
+    && rm *.zip
+CMD ["regenie", "--version"]

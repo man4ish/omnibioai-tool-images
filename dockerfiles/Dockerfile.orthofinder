@@ -1,0 +1,10 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    python3 \
+    diamond-aligner \
+    mcl \
+    fasttree \
+    libgomp1
+COPY orthofinder /usr/local/bin/orthofinder
+RUN chmod +x /usr/local/bin/orthofinder
+CMD ["orthofinder", "--version"]
