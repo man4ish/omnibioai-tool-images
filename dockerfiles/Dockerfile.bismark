@@ -1,0 +1,11 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    perl \
+    bowtie2 \
+    samtools \
+    libgomp1 \
+    zlib1g
+COPY bismark /usr/local/bin/bismark
+COPY bismark_methylation_extractor /usr/local/bin/bismark_methylation_extractor
+RUN chmod +x /usr/local/bin/bismark /usr/local/bin/bismark_methylation_extractor
+CMD ["bismark", "--version"]

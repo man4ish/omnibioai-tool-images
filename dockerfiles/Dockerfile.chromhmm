@@ -1,0 +1,7 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    default-jre
+COPY ChromHMM.jar /opt/ChromHMM.jar
+RUN echo '#!/bin/bash\nexec java -jar /opt/ChromHMM.jar "$@"' > /usr/local/bin/ChromHMM.sh \
+    && chmod +x /usr/local/bin/ChromHMM.sh
+CMD ["ChromHMM.sh", "Version"]

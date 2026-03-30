@@ -1,0 +1,12 @@
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y \
+    perl \
+    wget \
+    samtools \
+    bowtie2 \
+    && wget http://homer.ucsd.edu/homer/configureHomer.pl \
+    && perl configureHomer.pl -install \
+    && ln -s /root/.homer/bin/findPeaks /usr/local/bin/findPeaks \
+    && ln -s /root/.homer/bin/makeTagDirectory /usr/local/bin/makeTagDirectory \
+    && ln -s /root/.homer/bin/annotatePeaks.pl /usr/local/bin/annotatePeaks.pl
+CMD ["findPeaks", "--version"]
