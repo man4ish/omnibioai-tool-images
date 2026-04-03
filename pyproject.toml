@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omnibioai-tool-images"
+version = "0.1.5"
+description = "OmniBioAI Tool Image Service: automated building, pushing, and versioning of Docker/Singularity images for bioinformatics"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Manish Kumar" }]
+keywords = ["docker", "singularity", "hpc", "bioinformatics", "containers", "devops"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: POSIX :: Linux",
+]
+
+dependencies = [
+  "docker>=7.0.0",
+  "pydantic>=2.6",
+  "PyYAML>=6.0.1",
+  "rich>=13.0",  # For beautiful build logs in CLI
+  "httpx>=0.27.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/man4ish/omnibioai-tool-images"
+Repository = "https://github.com/man4ish/omnibioai-tool-images"
+
+[project.scripts]
+omnibioai-build = "scripts.build_orchestrator:main"
+
+[tool.setuptools]
+package-dir = { "" = "." }
+packages = ["scripts"]
+
+[tool.coverage.run]
+source = ["scripts"]
+omit = [
+    "tests/*",
+    "dockerfiles/*",
+    "sif/*",
+]
+
+[tool.coverage.report]
+# Enforcing the Elite Band threshold
+fail_under = 95
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "--cov=scripts --cov-report=term-missing --cov-report=html:htmlcov"
