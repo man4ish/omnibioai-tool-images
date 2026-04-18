@@ -1,0 +1,10 @@
+FROM ubuntu:24.04
+
+# Install Python + boto3 + azure for generic_sif_runner
+RUN apt-get update && apt-get install -y python3 python3-pip && \
+    pip3 install boto3 azure-storage-blob azure-identity --break-system-packages
+
+# Copy generic_sif_runner
+COPY ../omnibioai-tool-runtime /app
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages

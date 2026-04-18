@@ -1,12 +1,13 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    default-jre \
-    wget \
-    unzip \
-    && wget https://github.com/usadellab/Trimmomatic/releases/download/v0.39/Trimmomatic-0.39.zip \
-    && unzip Trimmomatic-0.39.zip \
-    && mv Trimmomatic-0.39 /opt/trimmomatic \
-    && echo '#!/bin/bash\njava -jar /opt/trimmomatic/trimmomatic-0.39.jar "$@"' > /usr/local/bin/trimmomatic \
-    && chmod +x /usr/local/bin/trimmomatic \
-    && rm Trimmomatic-0.39.zip
-CMD ["trimmomatic", "-version"]
+FROM python:3.11-slim-bookworm
+
+RUN apt-get update && apt-get install -y trimmomatic && rm -rf /var/lib/apt/lists/*
+
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+
+CMD ["python", "-m", "tools.generic_sif_runner.run"]
