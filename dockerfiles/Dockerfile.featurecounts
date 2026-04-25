@@ -1,7 +1,16 @@
 FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y libgomp1 zlib1g
+RUN apt-get update && apt-get install -y python3-pip libgomp1 zlib1g
 COPY featureCounts /usr/local/bin/featureCounts
 COPY subread-align /usr/local/bin/subread-align
 COPY subread-buildindex /usr/local/bin/subread-buildindex
 RUN chmod +x /usr/local/bin/featureCounts /usr/local/bin/subread-align /usr/local/bin/subread-buildindex
-CMD ["featureCounts", "-v"]
+# ── generic_sif_runner (handles S3/Azure download + results upload) ──
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages
+
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages
+
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

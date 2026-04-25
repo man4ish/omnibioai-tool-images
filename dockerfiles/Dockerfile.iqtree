@@ -1,7 +1,19 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    libgomp1 \
-    zlib1g
-COPY iqtree2 /usr/local/bin/iqtree2
-RUN chmod +x /usr/local/bin/iqtree2
-CMD ["iqtree2", "--version"]
+FROM python:3.11-slim-bookworm
+
+RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
+RUN wget -q https://github.com/iqtree/iqtree2/releases/download/v2.3.6/iqtree-2.3.6-Linux-intel.tar.gz \
+    -O /tmp/iqtree.tar.gz \
+    && tar -xzf /tmp/iqtree.tar.gz -C /opt/ \
+    && ln -s /opt/iqtree-2.3.6-Linux-intel/bin/iqtree2 /usr/local/bin/iqtree2 \
+    && ln -s /opt/iqtree-2.3.6-Linux-intel/bin/iqtree2 /usr/local/bin/iqtree \
+    && rm /tmp/iqtree.tar.gz
+
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

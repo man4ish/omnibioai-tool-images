@@ -1,8 +1,13 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    python3 \
-    libgomp1 \
-    zlib1g
-COPY macs2 /usr/local/bin/macs2
-RUN chmod +x /usr/local/bin/macs2
-CMD ["macs2", "--version"]
+FROM python:3.11-slim-bookworm
+
+RUN pip install macs2 --no-cache-dir
+
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

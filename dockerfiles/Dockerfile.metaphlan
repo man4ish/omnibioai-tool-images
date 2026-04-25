@@ -5,4 +5,13 @@ RUN apt-get update && apt-get install -y \
     bowtie2 \
     samtools \
     && pip3 install --break-system-packages metaphlan
-CMD ["metaphlan", "--version"]
+# ── generic_sif_runner (handles S3/Azure download + results upload) ──
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

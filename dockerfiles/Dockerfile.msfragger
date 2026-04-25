@@ -9,4 +9,13 @@ RUN apt-get update && apt-get install -y \
 # Download from https://msfragger.nesvilab.org/ and place at /opt/MSFragger.jar
 COPY MSFragger.jar /opt/MSFragger.jar
 RUN java -jar /opt/MSFragger.jar --version 2>&1 || true
-CMD ["java", "-jar", "/opt/MSFragger.jar", "--version"]
+# ── generic_sif_runner (handles S3/Azure download + results upload) ──
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

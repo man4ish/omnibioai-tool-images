@@ -1,13 +1,13 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    default-jre \
-    perl \
-    wget \
-    unzip \
-    && wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.12.1.zip \
-    && unzip fastqc_v0.12.1.zip \
-    && chmod +x FastQC/fastqc \
-    && mv FastQC /opt/fastqc \
-    && ln -s /opt/fastqc/fastqc /usr/local/bin/fastqc \
-    && rm fastqc_v0.12.1.zip
-CMD ["fastqc", "--version"]
+FROM python:3.11-slim-bookworm
+
+RUN apt-get update && apt-get install -y fastqc && rm -rf /var/lib/apt/lists/*
+
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

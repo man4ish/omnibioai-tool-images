@@ -1,10 +1,16 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    python3 \
-    libgomp1 \
-    zlib1g \
-    libbz2-1.0
-COPY spades.py /usr/local/bin/spades.py
-RUN chmod +x /usr/local/bin/spades.py \
-    && ln -s /usr/local/bin/spades.py /usr/local/bin/spades
-CMD ["spades.py", "--version"]
+FROM python:3.11-slim-bookworm
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget && rm -rf /var/lib/apt/lists/*
+RUN wget -q https://github.com/ablab/spades/releases/download/v3.15.5/SPAdes-3.15.5-Linux.tar.gz \
+    -O /tmp/spades.tar.gz \
+    && tar -xzf /tmp/spades.tar.gz -C /opt/ \
+    && ln -s /opt/SPAdes-3.15.5-Linux/bin/spades.py /usr/local/bin/spades.py \
+    && ln -s /opt/SPAdes-3.15.5-Linux/bin/spades.py /usr/local/bin/spades \
+    && rm /tmp/spades.tar.gz
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

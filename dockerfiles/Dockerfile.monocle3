@@ -1,12 +1,12 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    r-base \
-    r-base-dev \
-    libcurl4-openssl-dev \
-    libssl-dev \
-    libxml2-dev \
-    libhdf5-dev \
-    libgdal-dev \
-    && R -e "install.packages('BiocManager', repos='https://cran.r-project.org')" \
-    && R -e "BiocManager::install(c('monocle3','SeuratWrappers'))"
-CMD ["Rscript", "-e", "library(monocle3); cat('monocle3 ready\n')"]
+FROM bioconductor/bioconductor_docker:RELEASE_3_18
+RUN apt-get update && apt-get install -y python3-pip libhdf5-dev libgdal-dev libgeos-dev && rm -rf /var/lib/apt/lists/*
+RUN R -e "install.packages('remotes', repos='https://cran.r-project.org')"
+RUN R -e "remotes::install_github('cole-trapnell-lab/monocle3')"
+RUN R -e "remotes::install_github('satijalab/seurat-wrappers')"
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

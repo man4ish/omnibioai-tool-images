@@ -1,9 +1,12 @@
 FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    perl \
-    libgomp1
-COPY TransDecoder.LongOrfs /usr/local/bin/TransDecoder.LongOrfs
-COPY TransDecoder.Predict /usr/local/bin/TransDecoder.Predict
-RUN chmod +x /usr/local/bin/TransDecoder.LongOrfs \
-    && chmod +x /usr/local/bin/TransDecoder.Predict
-CMD ["TransDecoder.LongOrfs", "--version"]
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip perl transdecoder \
+    && rm -rf /var/lib/apt/lists/*
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

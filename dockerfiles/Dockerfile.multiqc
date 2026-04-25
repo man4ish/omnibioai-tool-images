@@ -1,16 +1,12 @@
 FROM python:3.11-slim-bookworm
 
-# Install multiqc
 RUN pip install multiqc --no-cache-dir
 
-# Install boto3 + azure for S3/Azure downloads
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 
-# Copy generic_sif_runner
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
-
 WORKDIR /app
 RUN pip install -e . --no-cache-dir
 

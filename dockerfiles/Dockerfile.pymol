@@ -1,9 +1,13 @@
 FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    libgl1 \
-    libglib2.0-0 \
-    libgomp1 \
-    python3
-COPY pymol_bin /usr/local/bin/pymol
-RUN chmod +x /usr/local/bin/pymol
-CMD ["pymol", "--version"]
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip python3 libgl1 libglib2.0-0 libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+RUN pip3 install pymol-open-source --break-system-packages --no-cache-dir
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

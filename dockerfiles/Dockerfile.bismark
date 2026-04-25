@@ -1,11 +1,17 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    perl \
-    bowtie2 \
-    samtools \
-    libgomp1 \
-    zlib1g
-COPY bismark /usr/local/bin/bismark
-COPY bismark_methylation_extractor /usr/local/bin/bismark_methylation_extractor
-RUN chmod +x /usr/local/bin/bismark /usr/local/bin/bismark_methylation_extractor
-CMD ["bismark", "--version"]
+FROM python:3.11-slim-bookworm
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    perl bowtie2 samtools wget && rm -rf /var/lib/apt/lists/*
+RUN wget -q https://github.com/FelixKrueger/Bismark/archive/refs/tags/v0.24.2.tar.gz \
+    -O /tmp/bismark.tar.gz \
+    && tar -xzf /tmp/bismark.tar.gz -C /opt/ \
+    && chmod +x /opt/Bismark-0.24.2/bismark* \
+    && for f in bismark bismark_methylation_extractor bismark_genome_preparation coverage2cytosine bismark2report bismark2summary; do \
+       [ -f /opt/Bismark-0.24.2/$f ] && ln -s /opt/Bismark-0.24.2/$f /usr/local/bin/$f; done \
+    && rm /tmp/bismark.tar.gz
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

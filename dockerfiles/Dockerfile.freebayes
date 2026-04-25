@@ -1,10 +1,10 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    libgomp1 \
-    zlib1g \
-    libbz2-1.0 \
-    liblzma5 \
-    libstdc++6
-COPY freebayes /usr/local/bin/freebayes
-RUN chmod +x /usr/local/bin/freebayes
-CMD ["freebayes", "--version"]
+FROM python:3.11-slim-bookworm
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    freebayes && rm -rf /var/lib/apt/lists/*
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

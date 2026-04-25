@@ -1,10 +1,15 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    python3 \
-    diamond-aligner \
-    mcl \
-    fasttree \
-    libgomp1
-COPY orthofinder /usr/local/bin/orthofinder
-RUN chmod +x /usr/local/bin/orthofinder
-CMD ["orthofinder", "--version"]
+FROM python:3.11-slim-bookworm
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    diamond-aligner mcl fasttree libgomp1 wget && rm -rf /var/lib/apt/lists/*
+RUN wget -q https://github.com/davidemms/OrthoFinder/releases/download/2.5.5/OrthoFinder.tar.gz \
+    -O /tmp/orthofinder.tar.gz \
+    && tar -xzf /tmp/orthofinder.tar.gz -C /opt/ \
+    && ln -s /opt/OrthoFinder/orthofinder /usr/local/bin/orthofinder \
+    && rm /tmp/orthofinder.tar.gz
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

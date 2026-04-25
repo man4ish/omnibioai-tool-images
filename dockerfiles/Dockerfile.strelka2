@@ -8,4 +8,13 @@ RUN apt-get update && apt-get install -y \
     && mv strelka-2.9.10.centos6_x86_64 /opt/strelka \
     && ln -s /opt/strelka/bin/configureStrelkaSomaticWorkflow.py /usr/local/bin/ \
     && rm strelka-2.9.10.centos6_x86_64.tar.bz2
-CMD ["configureStrelkaSomaticWorkflow.py", "--version"]
+# ── generic_sif_runner (handles S3/Azure download + results upload) ──
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages
+
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages
+
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

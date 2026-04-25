@@ -1,4 +1,18 @@
 FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    percolator
-CMD ["percolator", "--version"]
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip wget libboost-serialization1.83.0 libboost-filesystem1.83.0 \
+    && rm -rf /var/lib/apt/lists/*
+RUN wget -q https://github.com/percolator/percolator/releases/download/rel-3-06-05/ubuntu20_04.zip \
+    -O /tmp/percolator.zip \
+    && cd /tmp && unzip -o percolator.zip \
+    && mv percolator /usr/local/bin/ \
+    && chmod +x /usr/local/bin/percolator \
+    && rm -rf /tmp/percolator.zip
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

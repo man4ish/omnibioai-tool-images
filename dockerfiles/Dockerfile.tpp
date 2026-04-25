@@ -1,8 +1,12 @@
 FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    libgomp1 \
-    && pip3 install --break-system-packages pyteomics pymzml pandas numpy
-# TPP install via conda is recommended for production
-CMD ["python3", "-c", "import pyteomics; print('pyteomics ready')"]
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-pip libgomp1 && rm -rf /var/lib/apt/lists/*
+RUN pip3 install pyteomics pymzml pandas numpy --break-system-packages --no-cache-dir
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

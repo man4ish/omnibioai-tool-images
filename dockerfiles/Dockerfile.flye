@@ -1,5 +1,15 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y python3 libgomp1 zlib1g
-COPY flye /usr/local/bin/flye
-RUN chmod +x /usr/local/bin/flye
-CMD ["flye", "--version"]
+FROM python:3.11-slim-bookworm
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget libgomp1 && rm -rf /var/lib/apt/lists/*
+RUN wget -q https://github.com/fenderglass/Flye/releases/download/2.9.4/Flye-2.9.4-Linux.tar.gz \
+    -O /tmp/flye.tar.gz \
+    && tar -xzf /tmp/flye.tar.gz -C /opt/ \
+    && ln -s /opt/Flye-2.9.4-Linux/bin/flye /usr/local/bin/flye \
+    && rm /tmp/flye.tar.gz
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

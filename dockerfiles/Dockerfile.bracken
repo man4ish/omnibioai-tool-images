@@ -1,8 +1,26 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    libgomp1 \
-    zlib1g \
-    python3
-COPY bracken /usr/local/bin/bracken
-RUN chmod +x /usr/local/bin/bracken
-CMD ["bracken", "--version"]
+FROM python:3.11-bookworm AS builder
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc g++ make wget && rm -rf /var/lib/apt/lists/*
+RUN wget -q https://github.com/jenniferlu717/Bracken/archive/refs/tags/v2.9.tar.gz \
+    -O /tmp/bracken.tar.gz \
+    && tar -xzf /tmp/bracken.tar.gz -C /tmp/ \
+    && cd /tmp/Bracken-2.9/src && make \
+    && cp /tmp/Bracken-2.9/src/kmer2read_distr /tmp/kmer2read_distr
+
+FROM python:3.11-slim-bookworm
+COPY --from=builder /tmp/kmer2read_distr /usr/local/bin/kmer2read_distr
+RUN wget -q https://github.com/jenniferlu717/Bracken/archive/refs/tags/v2.9.tar.gz \
+    -O /tmp/bracken.tar.gz \
+    && tar -xzf /tmp/bracken.tar.gz -C /tmp/ \
+    && cp /tmp/Bracken-2.9/bracken /tmp/Bracken-2.9/bracken-build \
+       /tmp/Bracken-2.9/est_abundance.py /usr/local/bin/ \
+    && chmod +x /usr/local/bin/bracken /usr/local/bin/bracken-build \
+       /usr/local/bin/kmer2read_distr \
+    && rm -rf /tmp/Bracken-2.9 /tmp/bracken.tar.gz
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+CMD ["python", "-m", "tools.generic_sif_runner.run"]
