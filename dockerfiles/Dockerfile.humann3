@@ -1,21 +1,11 @@
 FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    bowtie2 \
-    samtools \
-    && pip3 install --break-system-packages \
-    humann \
-    metaphlan
-COPY humann /usr/local/bin/humann
-RUN chmod +x /usr/local/bin/humann
-# ── generic_sif_runner (handles S3/Azure download + results upload) ──
-RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
-
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-pip bowtie2 samtools && rm -rf /var/lib/apt/lists/*
+RUN pip3 install --break-system-packages humann metaphlan
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
-RUN pip install -e . --no-cache-dir
-
-CMD ["python", "-m", "tools.generic_sif_runner.run"]
+RUN pip3 install -e . --break-system-packages
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

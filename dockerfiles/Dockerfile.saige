@@ -1,6 +1,6 @@
 FROM bioconductor/bioconductor_docker:RELEASE_3_18
-RUN apt-get update && apt-get install -y python3-pip \
-    libboost-all-dev libblas-dev liblapack-dev libgomp1 \
+RUN apt-get -o Acquire::AllowInsecureRepositories=true update \
+    && apt-get install -y --allow-unauthenticated libboost-all-dev libblas-dev liblapack-dev libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 RUN R -e "install.packages('remotes', repos='https://cran.r-project.org')"
 RUN R -e "remotes::install_github('weizhouUMICH/SAIGE')"

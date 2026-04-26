@@ -1,5 +1,7 @@
 FROM bioconductor/bioconductor_docker:RELEASE_3_18
-RUN apt-get update && apt-get install -y python3-pip libhdf5-dev libgdal-dev libgeos-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get -o Acquire::AllowInsecureRepositories=true update \
+    && apt-get install -y --allow-unauthenticated libhdf5-dev libgdal-dev libgeos-dev \
+    && rm -rf /var/lib/apt/lists/*
 RUN R -e "install.packages('remotes', repos='https://cran.r-project.org')"
 RUN R -e "remotes::install_github('cole-trapnell-lab/monocle3')"
 RUN R -e "remotes::install_github('satijalab/seurat-wrappers')"

@@ -5,18 +5,17 @@ RUN wget -q https://github.com/jenniferlu717/Bracken/archive/refs/tags/v2.9.tar.
     -O /tmp/bracken.tar.gz \
     && tar -xzf /tmp/bracken.tar.gz -C /tmp/ \
     && cd /tmp/Bracken-2.9/src && make \
-    && cp /tmp/Bracken-2.9/src/kmer2read_distr /tmp/kmer2read_distr
+    && cp /tmp/Bracken-2.9/src/kmer2read_distr /tmp/kmer2read_distr \
+    && cp /tmp/Bracken-2.9/bracken /tmp/bracken \
+    && cp /tmp/Bracken-2.9/bracken-build /tmp/bracken-build \
+    && cp /tmp/Bracken-2.9/src/est_abundance.py /tmp/est_abundance.py
 
 FROM python:3.11-slim-bookworm
 COPY --from=builder /tmp/kmer2read_distr /usr/local/bin/kmer2read_distr
-RUN wget -q https://github.com/jenniferlu717/Bracken/archive/refs/tags/v2.9.tar.gz \
-    -O /tmp/bracken.tar.gz \
-    && tar -xzf /tmp/bracken.tar.gz -C /tmp/ \
-    && cp /tmp/Bracken-2.9/bracken /tmp/Bracken-2.9/bracken-build \
-       /tmp/Bracken-2.9/est_abundance.py /usr/local/bin/ \
-    && chmod +x /usr/local/bin/bracken /usr/local/bin/bracken-build \
-       /usr/local/bin/kmer2read_distr \
-    && rm -rf /tmp/Bracken-2.9 /tmp/bracken.tar.gz
+COPY --from=builder /tmp/bracken /usr/local/bin/bracken
+COPY --from=builder /tmp/bracken-build /usr/local/bin/bracken-build
+COPY --from=builder /tmp/est_abundance.py /usr/local/bin/est_abundance.py
+RUN chmod +x /usr/local/bin/bracken /usr/local/bin/bracken-build /usr/local/bin/kmer2read_distr
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime

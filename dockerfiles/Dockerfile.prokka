@@ -1,7 +1,7 @@
-FROM staphb/prokka:1.14.6
-USER root
+FROM ubuntu:24.04
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-pip && rm -rf /var/lib/apt/lists/*
+    python3-pip prokka && rm -rf /var/lib/apt/lists/*
 RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime

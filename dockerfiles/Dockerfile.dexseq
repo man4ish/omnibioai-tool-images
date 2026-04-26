@@ -1,5 +1,4 @@
 FROM bioconductor/bioconductor_docker:RELEASE_3_18
-RUN apt-get update && apt-get install -y python3-pip && rm -rf /var/lib/apt/lists/*
 RUN R -e "BiocManager::install(c('DEXSeq','BiocParallel'))"
 RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages
 COPY omnibioai-tool-runtime/tools /app/tools

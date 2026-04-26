@@ -17,4 +17,4 @@ COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
 RUN pip3 install -e . --break-system-packages
 
-CMD ["python", "-m", "tools.generic_sif_runner.run"]
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

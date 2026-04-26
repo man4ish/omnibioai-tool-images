@@ -1,16 +1,17 @@
 FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y python3-pip libgomp1 zlib1g
-COPY featureCounts /usr/local/bin/featureCounts
-COPY subread-align /usr/local/bin/subread-align
-COPY subread-buildindex /usr/local/bin/subread-buildindex
-RUN chmod +x /usr/local/bin/featureCounts /usr/local/bin/subread-align /usr/local/bin/subread-buildindex
-# ── generic_sif_runner (handles S3/Azure download + results upload) ──
-RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages
-
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip libgomp1 zlib1g wget && rm -rf /var/lib/apt/lists/*
+RUN wget -q https://sourceforge.net/projects/subread/files/subread-2.0.6/subread-2.0.6-Linux-x86_64.tar.gz/download \
+    -O /tmp/subread.tar.gz \
+    && tar -xzf /tmp/subread.tar.gz -C /opt/ \
+    && ln -s /opt/subread-2.0.6-Linux-x86_64/bin/featureCounts /usr/local/bin/featureCounts \
+    && ln -s /opt/subread-2.0.6-Linux-x86_64/bin/subread-align /usr/local/bin/subread-align \
+    && ln -s /opt/subread-2.0.6-Linux-x86_64/bin/subread-buildindex /usr/local/bin/subread-buildindex \
+    && rm /tmp/subread.tar.gz
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
 RUN pip3 install -e . --break-system-packages
-
-CMD ["python", "-m", "tools.generic_sif_runner.run"]
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

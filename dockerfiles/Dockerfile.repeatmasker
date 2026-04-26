@@ -1,8 +1,14 @@
 FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-pip repeatmasker \
-    && rm -rf /var/lib/apt/lists/*
+    python3-pip wget libgomp1 && rm -rf /var/lib/apt/lists/*
+RUN wget -q "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh" \
+    -O /tmp/miniconda.sh \
+    && bash /tmp/miniconda.sh -b -p /opt/conda \
+    && rm /tmp/miniconda.sh \
+    && /opt/conda/bin/conda install -y -c bioconda -c conda-forge repeatmasker \
+    && /opt/conda/bin/conda clean -afy
+ENV PATH="/opt/conda/bin:${PATH}"
 RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime

@@ -1,11 +1,15 @@
-FROM python:3.11-slim-bookworm
+FROM python:3.10-slim-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget libgomp1 && rm -rf /var/lib/apt/lists/*
-RUN wget -q https://github.com/fenderglass/Flye/releases/download/2.9.4/Flye-2.9.4-Linux.tar.gz \
-    -O /tmp/flye.tar.gz \
-    && tar -xzf /tmp/flye.tar.gz -C /opt/ \
-    && ln -s /opt/Flye-2.9.4-Linux/bin/flye /usr/local/bin/flye \
-    && rm /tmp/flye.tar.gz
+    libgomp1 wget && rm -rf /var/lib/apt/lists/*
+RUN pip install --upgrade pip --no-cache-dir
+RUN python3 -c "\
+import urllib.request, json, os; \
+data = json.loads(urllib.request.urlopen('https://pypi.org/pypi/flye/2.9.5/json').read()); \
+urls = [u['url'] for u in data['urls'] if 'cp310' in u['filename'] and 'x86_64' in u['filename']]; \
+print(urls[0]); open('/tmp/flye_url.txt','w').write(urls[0])" \
+    && wget -q -O /tmp/flye.whl "$(cat /tmp/flye_url.txt)" \
+    && pip install /tmp/flye.whl --no-deps --no-cache-dir \
+    && rm /tmp/flye.whl /tmp/flye_url.txt
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime

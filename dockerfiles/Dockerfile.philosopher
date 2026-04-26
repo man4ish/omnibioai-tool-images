@@ -1,15 +1,14 @@
 FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-pip libgomp1 zlib1g wget \
+    python3-pip libgomp1 zlib1g wget unzip \
     && rm -rf /var/lib/apt/lists/*
-RUN apt-get update && apt-get install -y --no-install-recommends curl unzip && rm -rf /var/lib/apt/lists/* \
-    && PHIL_URL=$(curl -s https://api.github.com/repos/Nesvilab/philosopher/releases/latest \
-        | grep browser_download_url | grep linux_amd64 | grep -v zip | head -1 | cut -d'"' -f4) \
-    && if [ -n "$PHIL_URL" ]; then wget -q "$PHIL_URL" -O /usr/local/bin/philosopher; \
-       else wget -q https://github.com/Nesvilab/philosopher/releases/download/v5.1.1/philosopher_v5.1.1_linux_amd64 \
-            -O /usr/local/bin/philosopher; fi \
-    && chmod +x /usr/local/bin/philosopher
+RUN wget -q "https://github.com/Nesvilab/philosopher/releases/download/v5.1.0/philosopher_v5.1.0_linux_amd64.zip" \
+    -O /tmp/philosopher.zip \
+    && unzip -q /tmp/philosopher.zip -d /tmp/philosopher_dir/ \
+    && mv /tmp/philosopher_dir/philosopher /usr/local/bin/philosopher \
+    && chmod +x /usr/local/bin/philosopher \
+    && rm -rf /tmp/philosopher.zip /tmp/philosopher_dir
 RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime

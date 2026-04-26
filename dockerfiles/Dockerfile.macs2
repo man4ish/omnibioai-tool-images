@@ -1,6 +1,8 @@
 FROM python:3.11-slim-bookworm
-
-RUN pip install macs2 --no-cache-dir
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential cmake && rm -rf /var/lib/apt/lists/*
+RUN pip install numpy cython --no-cache-dir
+RUN pip install macs2 --no-cache-dir --no-binary=:all:
 
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 

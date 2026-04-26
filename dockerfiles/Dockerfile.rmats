@@ -1,22 +1,19 @@
 FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    && pip3 install --break-system-packages \
-    numpy \
-    scipy \
-    pysam
-COPY rmats.py /usr/local/bin/rmats.py
-COPY rMATS /opt/rMATS
-RUN chmod +x /usr/local/bin/rmats.py \
-    && ln -s /usr/local/bin/rmats.py /usr/local/bin/rmats
-# ── generic_sif_runner (handles S3/Azure download + results upload) ──
-RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
-
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-pip wget && rm -rf /var/lib/apt/lists/*
+RUN pip3 install --break-system-packages numpy scipy pysam
+RUN wget -q https://github.com/Xinglab/rmats-turbo/releases/download/v4.3.0/rmats_turbo_v4_3_0.tar.gz \
+    -O /tmp/rmats.tar.gz \
+    && tar -xzf /tmp/rmats.tar.gz -C /opt/ \
+    && mv /opt/rmats_turbo_v4_3_0 /opt/rmats \
+    && ln -s /opt/rmats/rmats.py /usr/local/bin/rmats.py \
+    && ln -s /opt/rmats/rmats.py /usr/local/bin/rmats \
+    && chmod +x /opt/rmats/rmats.py \
+    && rm /tmp/rmats.tar.gz
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
-RUN pip install -e . --no-cache-dir
-
-CMD ["python", "-m", "tools.generic_sif_runner.run"]
+RUN pip3 install -e . --break-system-packages
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

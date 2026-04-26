@@ -6,12 +6,12 @@ RUN apt-get update && apt-get install -y \
     prodigal \
     && pip3 install --break-system-packages checkm-genome
 # ── generic_sif_runner (handles S3/Azure download + results upload) ──
-RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
 
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
-RUN pip install -e . --no-cache-dir
+RUN pip3 install -e . --break-system-packages
 
-CMD ["python", "-m", "tools.generic_sif_runner.run"]
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]
