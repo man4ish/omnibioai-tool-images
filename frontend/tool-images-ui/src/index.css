@@ -3,16 +3,24 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #0a0c10;
-  --bg1: #0e1117;
-  --bg2: #151922;
-  --bg3: #1c2230;
-  --border: #1e2736;
-  --accent: #00c9a7;
-  --accent-dim: rgba(0,201,167,0.12);
-  --text: #e2e8f0;
-  --text-dim: #7a8899;
-  --text-muted: #4a5568;
+  --bg: #ffffff;
+  --bg2: #f8fafc;
+  --bg3: #f1f5f9;
+  --bg4: rgba(15,23,42,0.04);
+  --bg5: rgba(15,23,42,0.07);
+  --border: rgba(15,23,42,0.10);
+  --border2: rgba(15,23,42,0.18);
+  --text: #0f172a;
+  --text2: #64748b;
+  --text3: #94a3b8;
+  --teal: #2563eb;
+  --teal-dim: rgba(37,99,235,0.08);
+  --teal-dim2: rgba(37,99,235,0.14);
+  --r: 10px;
+  --rl: 16px;
+  --red: #dc2626;
+  --amber: #d97706;
+  --green: #16a34a;
   --font: 'IBM Plex Mono', monospace;
 }
 
