@@ -1,6 +1,6 @@
 import type { Tool } from './types'
 
-const BASE = 'http://localhost:8097'
+const BASE = ''
 
 export async function fetchTools(): Promise<Tool[]> {
   const res = await fetch(`${BASE}/v1/tools`)

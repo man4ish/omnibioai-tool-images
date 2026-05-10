@@ -22,7 +22,7 @@ export default function App() {
   useEffect(() => {
     fetchTools()
       .then(setTools)
-      .catch(() => setError('Cannot reach API at localhost:8097'))
+      .catch(() => setError('Cannot reach API'))
       .finally(() => setLoading(false))
   }, [])
 
