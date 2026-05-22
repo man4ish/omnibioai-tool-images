@@ -17,9 +17,9 @@ const CATEGORY_COLORS: Record<string, string> = {
 }
 
 const STATUS_STYLE: Record<ToolStatus, { bg: string; color: string; label: string }> = {
-  built: { bg: 'rgba(0,201,167,0.12)', color: '#00c9a7', label: 'built' },
-  reused: { bg: 'rgba(79,195,247,0.12)', color: '#4fc3f7', label: 'reused' },
-  license: { bg: 'rgba(234,179,8,0.12)', color: '#eab308', label: 'license' },
+  built: { bg: 'rgba(0,229,160,0.12)', color: '#00e5a0', label: 'built' },
+  reused: { bg: 'rgba(0,148,255,0.12)', color: '#0094ff', label: 'reused' },
+  license: { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b', label: 'license' },
   missing: { bg: 'rgba(239,68,68,0.12)', color: '#ef4444', label: 'missing' },
 }
 
@@ -138,7 +138,7 @@ export default function ToolTable({ tools, selected, onSelect, onRebuild, onView
                       <ActionBtn
                         icon={<Key size={11} />}
                         label="Get license"
-                        color="#eab308"
+                        color="#f59e0b"
                         onClick={e => e.stopPropagation()}
                       />
                     )}

@@ -15,9 +15,9 @@ export default function StatsBar({ tools }: Props) {
       background: 'var(--border)',
       borderBottom: '1px solid var(--border)',
     }}>
-      <StatCard label="Built & ready" value={built} color="#00c9a7" />
-      <StatCard label="Reused SIF" value={reused} color="#4fc3f7" />
-      <StatCard label="Needs license" value={license} color="#eab308" />
+      <StatCard label="Built & ready" value={built} color="#00e5a0" />
+      <StatCard label="Reused SIF" value={reused} color="#0094ff" />
+      <StatCard label="Needs license" value={license} color="#f59e0b" />
       <StatCard label="Missing / broken" value={missing} color="#ef4444" />
     </div>
   )

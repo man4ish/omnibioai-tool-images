@@ -197,6 +197,6 @@ function PanelBtn({ icon, label, accent, disabled, onClick }: { icon: React.Reac
 }
 
 function statusColor(s: string): string {
-  const map: Record<string, string> = { built: '#00c9a7', reused: '#4fc3f7', license: '#eab308', missing: '#ef4444' }
+  const map: Record<string, string> = { built: '#00e5a0', reused: '#0094ff', license: '#f59e0b', missing: '#ef4444' }
   return map[s] ?? 'var(--text-dim)'
 }

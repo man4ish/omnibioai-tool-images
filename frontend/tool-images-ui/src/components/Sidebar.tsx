@@ -124,9 +124,9 @@ export default function Sidebar({ tools, activeCategory, onCategorySelect }: Pro
           Storage
         </div>
         <StorageStat label="Total size" value={sizeLabel} color="var(--accent)" />
-        <StorageStat label="Built" value={String(totalBuilt)} color="#22c55e" />
-        <StorageStat label="Reused" value={String(totalReused)} color="#4fc3f7" />
-        <StorageStat label="License" value={String(totalLicense)} color="#eab308" />
+        <StorageStat label="Built" value={String(totalBuilt)} color="#00e5a0" />
+        <StorageStat label="Reused" value={String(totalReused)} color="#0094ff" />
+        <StorageStat label="License" value={String(totalLicense)} color="#f59e0b" />
         <StorageStat label="Missing" value={String(totalMissing)} color="#ef4444" />
       </div>
     </aside>
