@@ -9,3 +9,5 @@ dockerfiles/subread-*
 build_logs/
 sif/
 dockerfiles/obsolete/
+.coverage
+coverage.json
