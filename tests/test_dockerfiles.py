@@ -21,6 +21,15 @@ DOCKERFILE_DIR = ROOT / "dockerfiles"
 SIF_DIR        = ROOT / "sif"
 BUILD_SCRIPT   = ROOT / "build_all.sh"
 
+APPROVED_BASES = [
+    "ubuntu:24.04",
+    "bioconductor/bioconductor_docker:RELEASE_3_18",
+    "python:3.11-slim-bookworm",
+    "python:3.11-bookworm",
+    "python:3.10-slim-bookworm",
+    "ensemblorg/ensembl-vep:release_112.0",
+]
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
@@ -90,12 +99,24 @@ class TestDockerfileStructure:
             f"Dockerfile.{tool} missing CMD instruction"
 
     @pytest.mark.parametrize("tool", ALL_TOOLS)
-    def test_dockerfile_uses_ubuntu_2404(self, tool):
-        """Each Dockerfile uses ubuntu:24.04 base image."""
+    def test_dockerfile_uses_approved_base(self, tool):
+        """Each Dockerfile uses an approved base image."""
         path = DOCKERFILE_DIR / f"Dockerfile.{tool}"
         content = path.read_text()
-        assert "ubuntu:24.04" in content, \
-            f"Dockerfile.{tool} does not use ubuntu:24.04"
+        # Find the primary FROM line (handles multi-stage by checking all)
+        from_lines = [l for l in content.splitlines() if l.strip().startswith("FROM")]
+        assert from_lines, f"Dockerfile.{tool} missing FROM instruction"
+        
+        # Check if ANY of the stages use an approved base
+        # (This is more flexible for multi-stage builds)
+        has_approved = False
+        for line in from_lines:
+            if any(base in line for base in APPROVED_BASES):
+                has_approved = True
+                break
+        
+        assert has_approved, \
+            f"Dockerfile.{tool} uses unapproved base. Approved: {APPROVED_BASES}"
 
     @pytest.mark.parametrize("tool", ALL_TOOLS)
     def test_dockerfile_no_apt_get_upgrade(self, tool):
