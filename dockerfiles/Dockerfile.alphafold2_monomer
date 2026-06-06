@@ -1,0 +1,21 @@
+# syntax=docker/dockerfile:1
+# ARM64 image for alphafold2_monomer
+FROM --platform=linux/arm64 nvidia/cuda:12.1.0-runtime-ubuntu22.04
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="alphafold2_monomer"
+LABEL platform="linux/arm64"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-pip wget && rm -rf /var/lib/apt/lists/* && \
+    pip3 install --no-cache-dir jax[cuda12_pip] -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html || \
+    pip3 install --no-cache-dir jax && \
+    pip3 install --no-cache-dir absl-py biopython numpy
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

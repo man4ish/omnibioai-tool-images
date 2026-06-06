@@ -1,0 +1,9 @@
+# syntax=docker/dockerfile:1
+# ARM64 image for nfcore_scrnaseq
+FROM --platform=linux/arm64 nfcore/base:2.1
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="nfcore_scrnaseq"
+LABEL platform="linux/arm64"
+
+RUN nextflow pull nf-core/scrnaseq -r 2.7.1 || true

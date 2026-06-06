@@ -1,20 +1,18 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y python3-pip \
-    perl \
-    wget
-# ANNOVAR requires registration at http://annovar.openbioinformatics.org
-# Download manually and copy to /opt/annovar
-COPY annovar/ /opt/annovar/
-RUN chmod +x /opt/annovar/*.pl \
-    && ln -s /opt/annovar/table_annovar.pl /usr/local/bin/table_annovar.pl \
-    && ln -s /opt/annovar/annotate_variation.pl /usr/local/bin/annotate_variation.pl
-# ── generic_sif_runner (handles S3/Azure download + results upload) ──
-RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages
+# syntax=docker/dockerfile:1
+# ARM64 image for annovar
+FROM --platform=linux/arm64 continuumio/miniconda3:latest
 
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="annovar"
+LABEL platform="linux/arm64"
+
+RUN conda install -y -c bioconda -c conda-forge perl && conda clean -afy && \
+    pip install annovar-parse || true
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
-RUN pip3 install -e . --break-system-packages
-
+RUN pip install -e . --no-cache-dir
 CMD ["python", "-m", "tools.generic_sif_runner.run"]

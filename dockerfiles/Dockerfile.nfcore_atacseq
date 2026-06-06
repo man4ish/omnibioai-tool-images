@@ -1,0 +1,9 @@
+# syntax=docker/dockerfile:1
+# ARM64 image for nfcore_atacseq
+FROM --platform=linux/arm64 nfcore/base:2.1
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="nfcore_atacseq"
+LABEL platform="linux/arm64"
+
+RUN nextflow pull nf-core/atacseq -r 2.1.2 || true

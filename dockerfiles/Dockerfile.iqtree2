@@ -1,0 +1,20 @@
+FROM ubuntu:22.04
+ARG IQTREE_VERSION=2.3.6
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+RUN wget -q https://github.com/iqtree/iqtree2/releases/download/v${IQTREE_VERSION}/iqtree-${IQTREE_VERSION}-Linux-arm.tar.gz -O /tmp/iqtree.tar.gz && \
+    tar -xzf /tmp/iqtree.tar.gz -C /opt/ && \
+    ln -s /opt/iqtree-${IQTREE_VERSION}-Linux-arm/bin/iqtree2 /usr/local/bin/iqtree2 && \
+    rm /tmp/iqtree.tar.gz
+WORKDIR /data
+CMD ["iqtree2", "--version"]
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

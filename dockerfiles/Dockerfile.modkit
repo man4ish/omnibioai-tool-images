@@ -1,0 +1,20 @@
+FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl ca-certificates build-essential && \
+    update-ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+# Install Rust and build modkit from source (no official arm64 binary for all versions)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+ENV PATH="/root/.cargo/bin:$PATH"
+RUN cargo install --git https://github.com/nanoporetech/modkit.git --locked
+WORKDIR /data
+CMD ["modkit", "--version"]
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

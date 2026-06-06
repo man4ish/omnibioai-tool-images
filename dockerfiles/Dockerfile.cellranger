@@ -1,19 +1,17 @@
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y python3-pip \
-    wget \
-    bc \
-    && wget -O cellranger.tar.gz "https://cf.10xgenomics.com/releases/cell-exp/cellranger-8.0.1.tar.gz" \
-    && tar -xzf cellranger.tar.gz \
-    && mv cellranger-8.0.1 /opt/cellranger \
-    && ln -s /opt/cellranger/cellranger /usr/local/bin/cellranger \
-    && rm cellranger.tar.gz
-# ── generic_sif_runner (handles S3/Azure download + results upload) ──
-RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages
+# syntax=docker/dockerfile:1
+# ARM64 image for cellranger
+FROM --platform=linux/arm64 continuumio/miniconda3:latest
 
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="cellranger"
+LABEL platform="linux/arm64"
+
+RUN conda install -y -c bioconda -c conda-forge cellranger && conda clean -afy
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
-RUN pip3 install -e . --break-system-packages
-
+RUN pip install -e . --no-cache-dir
 CMD ["python", "-m", "tools.generic_sif_runner.run"]

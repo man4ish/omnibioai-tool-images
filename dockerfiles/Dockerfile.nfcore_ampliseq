@@ -1,0 +1,9 @@
+# syntax=docker/dockerfile:1
+# ARM64 image for nfcore_ampliseq
+FROM --platform=linux/arm64 nfcore/base:2.1
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="nfcore_ampliseq"
+LABEL platform="linux/arm64"
+
+RUN nextflow pull nf-core/ampliseq -r 2.12.0 || true

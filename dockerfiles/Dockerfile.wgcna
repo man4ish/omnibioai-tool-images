@@ -1,0 +1,17 @@
+FROM r-base:4.3.1
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libcurl4-openssl-dev libssl-dev libxml2-dev liblapack-dev libblas-dev && \
+    rm -rf /var/lib/apt/lists/*
+RUN Rscript -e "install.packages(c('WGCNA','BiocManager'), repos='https://cloud.r-project.org')" && \
+    Rscript -e "BiocManager::install(c('impute','preprocessCore','GO.db'), ask=FALSE)"
+WORKDIR /data
+CMD ["Rscript", "--version"]
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

@@ -1,0 +1,15 @@
+FROM continuumio/miniconda3:latest
+ENV DEBIAN_FRONTEND=noninteractive
+RUN conda install -y -c bioconda -c conda-forge muscle && \
+    conda clean -afy && \
+    ln -sf $(which muscle) /usr/local/bin/muscle5
+WORKDIR /data
+CMD ["muscle5", "-version"]
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

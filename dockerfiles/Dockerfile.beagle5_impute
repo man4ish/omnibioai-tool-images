@@ -1,0 +1,23 @@
+# syntax=docker/dockerfile:1
+# ARM64 image for beagle5_impute
+FROM --platform=linux/arm64 continuumio/miniconda3:latest
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="beagle5_impute"
+LABEL platform="linux/arm64"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openjdk-17-jre-headless wget && rm -rf /var/lib/apt/lists/* && \
+    wget -q https://faculty.washington.edu/browning/beagle/beagle.06Aug24.a91.jar \
+        -O /opt/beagle.jar && \
+    echo '#!/bin/bash
+exec java -jar /opt/beagle.jar "$@"' > /usr/local/bin/beagle && \
+    chmod +x /usr/local/bin/beagle
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install -e . --no-cache-dir
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

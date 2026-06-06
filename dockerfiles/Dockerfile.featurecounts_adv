@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1
+# ARM64 image for featurecounts_adv
+FROM --platform=linux/arm64 ubuntu:24.04
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="featurecounts_adv"
+LABEL platform="linux/arm64"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget build-essential zlib1g-dev && rm -rf /var/lib/apt/lists/* && \
+    wget -q https://sourceforge.net/projects/subread/files/subread-2.0.6/subread-2.0.6-Linux-aarch64.tar.gz && \
+    tar xzf subread-2.0.6-Linux-aarch64.tar.gz && \
+    cp subread-2.0.6-Linux-aarch64/bin/featureCounts /usr/local/bin/ && \
+    rm -rf subread-2.0.6* || \
+    (apt-get update && apt-get install -y subread && rm -rf /var/lib/apt/lists/*)
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip && rm -rf /var/lib/apt/lists/*
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
+RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
+COPY omnibioai-tool-runtime/tools /app/tools
+COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
+COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip3 install -e . --break-system-packages
+CMD ["python3", "-m", "tools.generic_sif_runner.run"]

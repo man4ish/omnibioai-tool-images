@@ -1,0 +1,9 @@
+# syntax=docker/dockerfile:1
+# ARM64 image for eager2 (nf-core/eager pipeline)
+FROM --platform=linux/arm64 nfcore/base:2.1
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="eager2"
+LABEL platform="linux/arm64"
+
+RUN nextflow pull nf-core/eager -r 2.5.2 || true
