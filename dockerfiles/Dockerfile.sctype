@@ -1,11 +1,12 @@
-FROM r-base:4.3.1
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libcurl4-openssl-dev libssl-dev libxml2-dev libhdf5-dev && \
-    rm -rf /var/lib/apt/lists/*
+# syntax=docker/dockerfile:1
+# ARM64 image for sctype
+FROM --platform=linux/arm64 bioconductor/bioconductor_docker:RELEASE_3_18
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="sctype"
+LABEL platform="linux/arm64"
+
 RUN Rscript -e "install.packages(c('Seurat','HGNChelper','ggplot2','openxlsx'), repos='https://cloud.r-project.org')"
-WORKDIR /data
-CMD ["Rscript", "-e", "library(Seurat); message('ScType ready')"]
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

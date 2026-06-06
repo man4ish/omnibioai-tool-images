@@ -1,12 +1,12 @@
-FROM r-base:4.3.1
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libcurl4-openssl-dev libssl-dev libxml2-dev && \
-    rm -rf /var/lib/apt/lists/*
-RUN Rscript -e "install.packages('BiocManager', repos='https://cloud.r-project.org')" && \
-    Rscript -e "BiocManager::install('fishpond', ask=FALSE)"
-WORKDIR /data
-CMD ["Rscript", "-e", "library(fishpond); message('SWISH/fishpond ready')"]
+# syntax=docker/dockerfile:1
+# ARM64 image for swish
+FROM --platform=linux/arm64 bioconductor/bioconductor_docker:RELEASE_3_18
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="swish"
+LABEL platform="linux/arm64"
+
+RUN Rscript -e "BiocManager::install('fishpond', ask=FALSE)"
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
