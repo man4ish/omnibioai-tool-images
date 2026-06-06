@@ -6,7 +6,8 @@ LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="spaceranger_count_adv"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge spaceranger && conda clean -afy
+RUN conda install -y -c conda-forge python=3.11 && conda clean -afy
+# Space Ranger is proprietary (10x Genomics) and x86_64-only; ARM64 is not supported
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

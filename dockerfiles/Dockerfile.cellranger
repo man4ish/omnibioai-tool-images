@@ -6,7 +6,8 @@ LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="cellranger"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge cellranger && conda clean -afy
+RUN conda install -y -c conda-forge python=3.11 && conda clean -afy
+# Cell Ranger is proprietary (10x Genomics) and requires download from 10x website; not on conda
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
