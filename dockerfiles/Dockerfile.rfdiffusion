@@ -7,8 +7,10 @@ LABEL tool="rfdiffusion"
 LABEL platform="linux/arm64"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential && rm -rf /var/lib/apt/lists/* && \
-    pip install --no-cache-dir rfdiffusion
+    build-essential git && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir numpy scipy biopython
+# RFdiffusion is not on PyPI; install from GitHub or use as placeholder
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

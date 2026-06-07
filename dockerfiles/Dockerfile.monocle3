@@ -5,7 +5,7 @@ RUN apt-get -o Acquire::AllowInsecureRepositories=true update \
 RUN R -e "install.packages('remotes', repos='https://cran.r-project.org')"
 RUN R -e "remotes::install_github('cole-trapnell-lab/monocle3')"
 RUN R -e "remotes::install_github('satijalab/seurat-wrappers')"
-RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages
+RUN pip3 install boto3 azure-storage-blob azure-identity
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml

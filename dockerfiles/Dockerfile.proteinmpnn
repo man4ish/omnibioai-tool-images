@@ -7,8 +7,10 @@ LABEL tool="proteinmpnn"
 LABEL platform="linux/arm64"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential && rm -rf /var/lib/apt/lists/* && \
-    pip install --no-cache-dir proteinmpnn
+    build-essential && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir numpy scipy biopython
+# ProteinMPNN is not on PyPI; installed from GitHub at runtime
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

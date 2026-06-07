@@ -6,10 +6,9 @@ LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="guppy_basecall_adv"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c conda-forge mamba && \
-    mamba install -y -c bioconda -c conda-forge ont-guppy-cpu && \
-    conda clean -afy || \
-    (pip install --no-cache-dir ont-pyguppy-client-lib || true)
+RUN conda install -y -c conda-forge python=3.11 && conda clean -afy
+# Guppy (ont-guppy-cpu) is x86_64-only; not available for ARM64
+# Use Dorado as the ARM64-native alternative
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

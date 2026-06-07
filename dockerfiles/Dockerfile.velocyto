@@ -1,4 +1,9 @@
-FROM python:3.11-slim-bookworm
+# syntax=docker/dockerfile:1
+# ARM64 image for velocyto
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="velocyto"
+LABEL platform="linux/arm64"
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential samtools libz-dev libhdf5-dev && rm -rf /var/lib/apt/lists/*
 RUN pip install Cython pysam loompy --no-cache-dir && \

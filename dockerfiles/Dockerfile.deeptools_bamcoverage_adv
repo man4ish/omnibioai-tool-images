@@ -1,12 +1,11 @@
 # syntax=docker/dockerfile:1
-# ARM64 image for deeptools
-FROM --platform=linux/arm64 python:3.11-slim-bookworm
-LABEL maintainer="OmniBioAI <team@omnibioai.io>" tool="deeptools" platform="linux/arm64"
+# ARM64 image for deeptools_bamcoverage_adv
+FROM --platform=linux/arm64 continuumio/miniconda3:latest
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="deeptools_bamcoverage_adv"
+LABEL platform="linux/arm64"
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential samtools && rm -rf /var/lib/apt/lists/* && \
-    pip install --no-cache-dir deeptools numpy scipy
-
+RUN conda install -y -c bioconda -c conda-forge deeptools && conda clean -afy
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
