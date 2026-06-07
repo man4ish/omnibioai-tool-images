@@ -7,13 +7,15 @@ LABEL tool="scbridge"
 LABEL platform="linux/arm64"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential && rm -rf /var/lib/apt/lists/* && \
-    pip install --no-cache-dir scbridge
+    build-essential && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir numpy pandas scipy scanpy anndata
+# scBridge is not on PyPI; installed from GitHub at runtime
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
-RUN pip install -e . --no-cache-dir
+RUN pip install . --no-cache-dir
 CMD ["python", "-m", "tools.generic_sif_runner.run"]
