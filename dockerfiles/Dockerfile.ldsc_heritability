@@ -6,7 +6,7 @@ LABEL tool="ldsc_heritability"
 LABEL platform="linux/arm64"
 RUN conda install -y -c bioconda -c conda-forge python=3.11 numpy scipy pandas bitarray setuptools pybedtools && \
     conda clean -afy && \
-    pip install --no-cache-dir git+https://github.com/bulik/ldsc.git
+    pip install --no-cache-dir --no-deps git+https://github.com/bulik/ldsc.git
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

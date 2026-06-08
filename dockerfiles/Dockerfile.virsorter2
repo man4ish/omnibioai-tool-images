@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for virsorter2
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="virsorter2"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge virsorter2 && conda clean -afy
+# virsorter2 not available in conda ARM64 channels
+RUN printf '#!/bin/sh\necho "virsorter2 is not available for ARM64 (virsorter2 not available in conda ARM64 channels)" >&2\nexit 1\n'     > /usr/local/bin/virsorter2 && chmod +x /usr/local/bin/virsorter2
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for admixture_ancestry
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="admixture_ancestry"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge admixture r-base r-ggplot2 r-dplyr r-tidyr && conda clean -afy
+# admixture x86_64-only upstream binary
+RUN printf '#!/bin/sh\necho "admixture_ancestry is not available for ARM64 (admixture x86_64-only upstream binary)" >&2\nexit 1\n'     > /usr/local/bin/admixture_ancestry && chmod +x /usr/local/bin/admixture_ancestry
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

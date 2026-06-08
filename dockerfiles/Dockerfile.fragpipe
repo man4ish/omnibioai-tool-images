@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1
-# ARM64 image for fragpipe (proteomics pipeline)
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+# ARM64 image for fragpipe
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="fragpipe"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge fragpipe openjdk && conda clean -afy
+# fragpipe depends on msfragger which requires mono not available for ARM64
+RUN printf '#!/bin/sh\necho "fragpipe is not available for ARM64 (fragpipe depends on msfragger which requires mono not available for ARM64)" >&2\nexit 1\n'     > /usr/local/bin/fragpipe && chmod +x /usr/local/bin/fragpipe
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

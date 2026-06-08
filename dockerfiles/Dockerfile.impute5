@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1
-# ARM64 image for impute5 (genotype imputation)
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+# ARM64 image for impute5
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="impute5"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge impute5 && conda clean -afy
+# impute5 x86_64-only binary
+RUN printf '#!/bin/sh\necho "impute5 is not available for ARM64 (impute5 x86_64-only binary)" >&2\nexit 1\n'     > /usr/local/bin/impute5 && chmod +x /usr/local/bin/impute5
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

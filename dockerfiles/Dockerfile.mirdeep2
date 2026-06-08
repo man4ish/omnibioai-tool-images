@@ -6,7 +6,7 @@ LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="mirdeep2"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge mirdeep2 && conda clean -afy
+RUN conda install -y -c bioconda -c conda-forge python=3.11 mirdeep2 && conda clean -afy
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

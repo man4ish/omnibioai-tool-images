@@ -1,12 +1,16 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for verkko
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="verkko"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge verkko && conda clean -afy
+# marbl/verkko GitHub releases only ship source tarballs (no aarch64 binary),
+# and there is no ARM64 bioconda package.  Install a stub so the image builds
+# cleanly; any invocation will exit with a clear error.
+RUN printf '#!/bin/sh\necho "verkko is not available for ARM64" >&2\nexit 1\n' \
+    > /usr/local/bin/verkko && chmod +x /usr/local/bin/verkko
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

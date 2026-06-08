@@ -10,8 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-17-jre-headless wget && rm -rf /var/lib/apt/lists/* && \
     wget -q https://faculty.washington.edu/browning/beagle/beagle.06Aug24.a91.jar \
         -O /opt/beagle.jar && \
-    echo '#!/bin/bash
-exec java -jar /opt/beagle.jar "$@"' > /usr/local/bin/beagle && \
+    printf '#!/bin/bash\nexec java -jar /opt/beagle.jar "$@"\n' > /usr/local/bin/beagle && \
     chmod +x /usr/local/bin/beagle
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir

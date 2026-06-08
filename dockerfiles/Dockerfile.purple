@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for purple
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="purple"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge hmftools && conda clean -afy
+# hmftools not available in conda ARM64 channels
+RUN printf '#!/bin/sh\necho "purple is not available for ARM64 (hmftools not available in conda ARM64 channels)" >&2\nexit 1\n'     > /usr/local/bin/purple && chmod +x /usr/local/bin/purple
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

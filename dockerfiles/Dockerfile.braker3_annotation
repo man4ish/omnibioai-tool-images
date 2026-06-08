@@ -1,14 +1,13 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for braker3_annotation
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="braker3_annotation"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c conda-forge mamba && \
-    mamba install -y -c bioconda -c conda-forge braker3 && \
-    conda clean -afy
+# braker3 deps (genomethreader) not available in conda ARM64 channels
+RUN printf '#!/bin/sh\necho "braker3_annotation is not available for ARM64 (braker3 deps (genomethreader) not available in conda ARM64 channels)" >&2\nexit 1\n'     > /usr/local/bin/braker3_annotation && chmod +x /usr/local/bin/braker3_annotation
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

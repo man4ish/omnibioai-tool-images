@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1
-# ARM64 image for msfragger (mass spectrometry database search)
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+# ARM64 image for msfragger
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="msfragger"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge msfragger openjdk && conda clean -afy
+# msfragger requires mono which is not available for ARM64
+RUN printf '#!/bin/sh\necho "msfragger is not available for ARM64 (msfragger requires mono which is not available for ARM64)" >&2\nexit 1\n'     > /usr/local/bin/msfragger && chmod +x /usr/local/bin/msfragger
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

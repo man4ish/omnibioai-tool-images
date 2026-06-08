@@ -7,7 +7,7 @@ LABEL tool="talon_transcriptome"
 LABEL platform="linux/arm64"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    samtools minimap2 && rm -rf /var/lib/apt/lists/* && \
+    samtools minimap2 build-essential && rm -rf /var/lib/apt/lists/* && \
     pip install --no-cache-dir talon pysam numpy pandas biopython
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir

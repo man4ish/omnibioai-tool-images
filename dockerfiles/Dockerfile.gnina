@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1
-# ARM64 image for gnina (molecular docking)
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+# ARM64 image for gnina
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="gnina"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge gnina && conda clean -afy
+# gnina x86_64/CUDA-only binary
+RUN printf '#!/bin/sh\necho "gnina is not available for ARM64 (gnina x86_64/CUDA-only binary)" >&2\nexit 1\n'     > /usr/local/bin/gnina && chmod +x /usr/local/bin/gnina
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

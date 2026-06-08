@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1
-# ARM64 image for mixcr (T/B-cell receptor repertoire analysis)
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+# ARM64 image for mixcr
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="mixcr"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge mixcr openjdk && conda clean -afy
+# mixcr not available in conda ARM64 channels
+RUN printf '#!/bin/sh\necho "mixcr is not available for ARM64 (mixcr not available in conda ARM64 channels)" >&2\nexit 1\n'     > /usr/local/bin/mixcr && chmod +x /usr/local/bin/mixcr
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

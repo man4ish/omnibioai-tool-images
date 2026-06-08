@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1
-# ARM64 image for diann (DIA-NN mass spectrometry)
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+# ARM64 image for diann
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="diann"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge diann && conda clean -afy
+# DIA-NN x86_64-only closed-source binary
+RUN printf '#!/bin/sh\necho "diann is not available for ARM64 (DIA-NN x86_64-only closed-source binary)" >&2\nexit 1\n'     > /usr/local/bin/diann && chmod +x /usr/local/bin/diann
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

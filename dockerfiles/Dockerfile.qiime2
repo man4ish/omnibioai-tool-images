@@ -1,16 +1,13 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for qiime2
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="qiime2"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c conda-forge mamba && \
-    mamba install -y -c qiime2 -c conda-forge -c bioconda \
-        qiime2 q2-types q2-demux q2-dada2 q2-phylogenetics q2-diversity q2-taxa \
-        q2-feature-classifier q2-composition && \
-    conda clean -afy
+# qiime2 ARM64 packages not in conda channels
+RUN printf '#!/bin/sh\necho "qiime2 is not available for ARM64 (qiime2 ARM64 packages not in conda channels)" >&2\nexit 1\n'     > /usr/local/bin/qiime2 && chmod +x /usr/local/bin/qiime2
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

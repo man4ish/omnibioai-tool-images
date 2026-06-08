@@ -1,12 +1,18 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for shapeit5
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="shapeit5"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge shapeit5 && conda clean -afy
+# shapeit5 releases (odelaneau/shapeit5) provide only x86_64 static binaries;
+# no aarch64 build has ever been published, and the GitHub repo is currently
+# blocked by GitHub staff (private_information, since 2026-05-04), making
+# release downloads inaccessible.  Install a stub so the image builds cleanly;
+# any invocation will exit with a clear error.
+RUN printf '#!/bin/sh\necho "shapeit5 is not available for ARM64 (x86_64-only upstream binary)" >&2\nexit 1\n' \
+    > /usr/local/bin/shapeit5 && chmod +x /usr/local/bin/shapeit5
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

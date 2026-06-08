@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 python3-pip nodejs npm git wget \
     openjdk-17-jre-headless && \
     rm -rf /var/lib/apt/lists/*
-RUN pip3 install --no-cache-dir mcmicro ashlar
+RUN pip3 install --no-cache-dir ashlar
 WORKDIR /data
 CMD ["python3", "-c", "import ashlar; print('MCMICRO ready')"]
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────

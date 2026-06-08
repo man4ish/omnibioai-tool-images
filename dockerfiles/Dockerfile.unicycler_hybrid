@@ -1,14 +1,13 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for unicycler_hybrid
-FROM --platform=linux/arm64 python:3.11-slim-bookworm
+FROM --platform=linux/arm64 continuumio/miniconda3:latest
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="unicycler_hybrid"
 LABEL platform="linux/arm64"
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    spades bowtie2 samtools && rm -rf /var/lib/apt/lists/* && \
-    pip install --no-cache-dir unicycler numpy biopython
+RUN conda install -y -c bioconda -c conda-forge python=3.11 spades bowtie2 samtools && conda clean -afy
+RUN pip install --no-cache-dir unicycler numpy biopython
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

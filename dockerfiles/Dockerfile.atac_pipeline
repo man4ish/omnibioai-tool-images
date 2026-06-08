@@ -6,7 +6,7 @@ LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="atac_pipeline"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge bowtie2 samtools bedtools macs2 deeptools picard pysam && conda clean -afy
+RUN conda install -y -c bioconda -c conda-forge python=3.11 bowtie2 samtools bedtools macs2 deeptools picard pysam && conda clean -afy
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

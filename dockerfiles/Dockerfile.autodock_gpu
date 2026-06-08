@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for autodock_gpu
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="autodock_gpu"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge autodock-gpu && conda clean -afy
+# autodock-gpu x86_64/CUDA-only binary
+RUN printf '#!/bin/sh\necho "autodock_gpu is not available for ARM64 (autodock-gpu x86_64/CUDA-only binary)" >&2\nexit 1\n'     > /usr/local/bin/autodock_gpu && chmod +x /usr/local/bin/autodock_gpu
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

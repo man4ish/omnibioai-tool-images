@@ -1,14 +1,12 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for trycycler_consensus
-FROM --platform=linux/arm64 python:3.11-slim-bookworm
+FROM --platform=linux/arm64 continuumio/miniconda3:latest
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="trycycler_consensus"
 LABEL platform="linux/arm64"
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    minimap2 && rm -rf /var/lib/apt/lists/* && \
-    pip install --no-cache-dir trycycler numpy pandas biopython
+RUN conda install -y -c bioconda -c conda-forge python=3.11 minimap2 trycycler numpy pandas biopython && conda clean -afy
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

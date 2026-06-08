@@ -4,7 +4,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 python3-pip r-base \
     libcurl4-openssl-dev libssl-dev libxml2-dev git && \
     rm -rf /var/lib/apt/lists/*
-RUN pip3 install --no-cache-dir pysam minimap2 numpy pandas
+RUN apt-get update && apt-get install -y --no-install-recommends minimap2 && rm -rf /var/lib/apt/lists/*
+RUN pip3 install --no-cache-dir pysam numpy pandas
 RUN Rscript -e "install.packages('BiocManager', repos='https://cloud.r-project.org')" && \
     Rscript -e "BiocManager::install('FLAMES', ask=FALSE)"
 WORKDIR /data

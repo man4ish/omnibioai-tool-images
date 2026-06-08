@@ -7,9 +7,10 @@ LABEL tool="cell2location_deconv"
 LABEL platform="linux/arm64"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential && rm -rf /var/lib/apt/lists/* && \
-    pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir cell2location scvi-tools scanpy anndata numpy pandas
+    build-essential git && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir meson ninja
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir cell2location scvi-tools scanpy anndata numpy pandas
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

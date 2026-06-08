@@ -8,7 +8,7 @@ LABEL platform="linux/arm64"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     samtools bowtie2 && rm -rf /var/lib/apt/lists/* && \
-    pip install --no-cache-dir arcasHLA numpy pandas biopython
+    pip install --no-cache-dir git+https://github.com/RabadanLab/arcasHLA.git numpy pandas biopython
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

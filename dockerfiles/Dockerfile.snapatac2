@@ -6,6 +6,7 @@ LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="snapatac2"
 LABEL platform="linux/arm64"
 
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir snapatac2 numpy pandas scipy matplotlib seaborn
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
