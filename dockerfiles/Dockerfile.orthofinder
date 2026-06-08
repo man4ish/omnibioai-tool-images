@@ -1,15 +1,18 @@
-FROM python:3.11-slim-bookworm
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    diamond-aligner mcl fasttree libgomp1 wget && rm -rf /var/lib/apt/lists/*
-RUN wget -q https://github.com/davidemms/OrthoFinder/releases/download/2.5.5/OrthoFinder.tar.gz \
-    -O /tmp/orthofinder.tar.gz \
-    && tar -xzf /tmp/orthofinder.tar.gz -C /opt/ \
-    && ln -s /opt/OrthoFinder/orthofinder /usr/local/bin/orthofinder \
-    && rm /tmp/orthofinder.tar.gz
+# syntax=docker/dockerfile:1
+# ARM64 image for orthofinder
+FROM --platform=linux/arm64 continuumio/miniconda3:latest
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="orthofinder"
+LABEL platform="linux/arm64"
+
+# OrthoFinder release tarballs bundle x86_64 binaries; use bioconda for ARM64
+RUN conda install -y -c bioconda -c conda-forge orthofinder && conda clean -afy
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
-RUN pip install -e . --no-cache-dir
+RUN pip install . --no-cache-dir
 CMD ["python", "-m", "tools.generic_sif_runner.run"]

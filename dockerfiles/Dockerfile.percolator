@@ -1,16 +1,18 @@
-FROM ubuntu:24.04
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-pip wget \
-    && rm -rf /var/lib/apt/lists/*
-RUN wget -q "https://github.com/percolator/percolator/releases/download/rel-3-08/percolator-v3-08-linux-amd64.deb" \
-    -O /tmp/percolator.deb \
-    && dpkg -i /tmp/percolator.deb || apt-get install -f -y \
-    && rm /tmp/percolator.deb
-RUN pip3 install boto3 azure-storage-blob azure-identity --break-system-packages --no-cache-dir
+# syntax=docker/dockerfile:1
+# ARM64 image for percolator
+FROM --platform=linux/arm64 continuumio/miniconda3:latest
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="percolator"
+LABEL platform="linux/arm64"
+
+# percolator amd64 .deb not compatible with ARM64; use bioconda
+RUN conda install -y -c bioconda -c conda-forge percolator && conda clean -afy
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
-RUN pip3 install . --break-system-packages
-CMD ["python3", "-m", "tools.generic_sif_runner.run"]
+RUN pip install . --no-cache-dir
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

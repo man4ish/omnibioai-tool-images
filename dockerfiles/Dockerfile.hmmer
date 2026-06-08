@@ -1,13 +1,18 @@
-FROM python:3.11-slim-bookworm
+# syntax=docker/dockerfile:1
+# ARM64 image for hmmer
+FROM --platform=linux/arm64 continuumio/miniconda3:latest
 
-RUN apt-get update && apt-get install -y hmmer && rm -rf /var/lib/apt/lists/*
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="hmmer"
+LABEL platform="linux/arm64"
 
+# hmmer not available in python:3.11-slim-bookworm ARM64 apt; use bioconda
+RUN conda install -y -c bioconda -c conda-forge hmmer && conda clean -afy
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
-
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
 RUN pip install -e . --no-cache-dir
-
 CMD ["python", "-m", "tools.generic_sif_runner.run"]

@@ -1,6 +1,14 @@
-FROM python:3.11-slim-bookworm
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    default-jre-headless snpeff && rm -rf /var/lib/apt/lists/*
+# syntax=docker/dockerfile:1
+# ARM64 image for snpeff
+FROM --platform=linux/arm64 continuumio/miniconda3:latest
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="snpeff"
+LABEL platform="linux/arm64"
+
+# snpeff not in Debian apt; use bioconda
+RUN conda install -y -c bioconda -c conda-forge snpeff && conda clean -afy
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime

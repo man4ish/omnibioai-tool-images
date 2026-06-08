@@ -1,11 +1,16 @@
-FROM ubuntu:22.04
+# syntax=docker/dockerfile:1
+# ARM64 image for polyphen2
+FROM --platform=linux/arm64 ubuntu:22.04
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="polyphen2"
+LABEL platform="linux/arm64"
+
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    perl wget ca-certificates blast2 python3 python3-pip && \
+    perl wget ca-certificates ncbi-blast+ python3 python3-pip && \
     rm -rf /var/lib/apt/lists/*
-RUN wget -q http://genetics.bwh.harvard.edu/pph2/dokuwiki/downloads -q || true
-WORKDIR /data
-CMD ["perl", "--version"]
+# PolyPhen-2 requires downloading data separately at runtime
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip3 install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

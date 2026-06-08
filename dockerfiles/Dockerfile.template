@@ -1,16 +1,16 @@
-FROM python:3.11-slim-bookworm
+# syntax=docker/dockerfile:1
+# ARM64 template base image with OmniBioAI tool runner
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
-# Install TOOL_NAME
-RUN pip install TOOL_PACKAGE --no-cache-dir
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="template"
+LABEL platform="linux/arm64"
 
-# Install boto3 + azure for S3/Azure downloads
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
-
-# Copy generic_sif_runner
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
-RUN pip install -e . --no-cache-dir
-
+RUN pip install . --no-cache-dir
 CMD ["python", "-m", "tools.generic_sif_runner.run"]

@@ -1,6 +1,14 @@
-FROM python:3.11-slim-bookworm
+# syntax=docker/dockerfile:1
+# ARM64 image for freebayes
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="freebayes"
+LABEL platform="linux/arm64"
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     freebayes && rm -rf /var/lib/apt/lists/*
+# ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime

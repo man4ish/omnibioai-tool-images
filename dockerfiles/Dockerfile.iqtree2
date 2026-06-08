@@ -1,15 +1,20 @@
-FROM ubuntu:22.04
+# syntax=docker/dockerfile:1
+# ARM64 image for iqtree2
+FROM --platform=linux/arm64 ubuntu:22.04
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="iqtree2"
+LABEL platform="linux/arm64"
+
 ARG IQTREE_VERSION=2.3.6
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget ca-certificates && \
+    python3 python3-pip wget ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 RUN wget -q https://github.com/iqtree/iqtree2/releases/download/v${IQTREE_VERSION}/iqtree-${IQTREE_VERSION}-Linux-arm.tar.gz -O /tmp/iqtree.tar.gz && \
     tar -xzf /tmp/iqtree.tar.gz -C /opt/ && \
     ln -s /opt/iqtree-${IQTREE_VERSION}-Linux-arm/bin/iqtree2 /usr/local/bin/iqtree2 && \
     rm /tmp/iqtree.tar.gz
-WORKDIR /data
-CMD ["iqtree2", "--version"]
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip3 install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
