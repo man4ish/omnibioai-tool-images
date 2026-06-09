@@ -98,7 +98,7 @@ build_tool() {
   if ! docker build \
       -t "${image}" \
       -f "${dockerfile}" \
-      "${DOCKERFILE_DIR}" \
+      "${SCRIPT_DIR}" \
       > "${tool_log}" 2>&1; then
     fail "${tool}: Docker build failed — see ${tool_log}"
     FAILED+=("${tool} (docker build)")

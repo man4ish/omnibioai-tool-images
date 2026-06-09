@@ -6,8 +6,7 @@ LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="beagle5_impute"
 LABEL platform="linux/arm64"
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    openjdk-17-jre-headless wget && rm -rf /var/lib/apt/lists/* && \
+RUN conda install -y -c conda-forge openjdk wget && conda clean -afy && \
     wget -q https://faculty.washington.edu/browning/beagle/beagle.06Aug24.a91.jar \
         -O /opt/beagle.jar && \
     printf '#!/bin/bash\nexec java -jar /opt/beagle.jar "$@"\n' > /usr/local/bin/beagle && \
