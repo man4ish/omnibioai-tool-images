@@ -1,16 +1,17 @@
 # syntax=docker/dockerfile:1
-# ARM64 image for totalvi
+# ARM64 image for manta
 FROM --platform=linux/arm64 continuumio/miniconda3:latest
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
-LABEL tool="totalvi"
+LABEL tool="manta"
 LABEL platform="linux/arm64"
 
-# totalvi (part of scvi-tools) requires PyTorch C++ extensions that don't build on ARM64 via pip;
-# install heavy deps via conda then scvi-tools itself --no-deps to skip the wheel.
-RUN conda install -y -c bioconda -c conda-forge python=3.11 scvi-tools scanpy anndata numpy pandas scipy \
+# manta requires Python 2.7; install it in an isolated env, base env keeps Python 3.11 for the runtime
+RUN conda install -y -c conda-forge python=3.11 \
     && conda clean -afy
-RUN pip install --no-cache-dir scvi-tools --no-deps
+RUN conda create -n manta -y -c bioconda -c conda-forge manta \
+    && conda clean -afy
+ENV PATH="/opt/conda/envs/manta/bin:${PATH}"
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

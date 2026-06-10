@@ -7,8 +7,11 @@ LABEL tool="arcashla"
 LABEL platform="linux/arm64"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    samtools bowtie2 && rm -rf /var/lib/apt/lists/* && \
-    pip install --no-cache-dir git+https://github.com/RabadanLab/arcasHLA.git numpy pandas biopython
+    git samtools bowtie2 && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir numpy pandas biopython
+# arcas-hla setup.py references a missing 'src' dir; clone and use directly instead.
+RUN git clone --depth 1 https://github.com/RabadanLab/arcasHLA.git /opt/arcasHLA
+ENV PATH="/opt/arcasHLA:${PATH}"
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

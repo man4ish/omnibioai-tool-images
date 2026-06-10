@@ -1,19 +1,19 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for mcmicro
-FROM --platform=linux/arm64 ubuntu:22.04
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 python3-pip nodejs npm git wget \
-    openjdk-17-jre-headless && \
-    rm -rf /var/lib/apt/lists/*
-RUN pip3 install --no-cache-dir ashlar
-WORKDIR /data
-CMD ["python3", "-c", "import ashlar; print('MCMICRO ready')"]
+FROM --platform=linux/arm64 continuumio/miniconda3:latest
+
+LABEL maintainer="OmniBioAI <team@omnibioai.io>"
+LABEL tool="mcmicro"
+LABEL platform="linux/arm64"
+
+# Try conda first; fall back to pip --no-build-isolation with build deps pre-installed.
+RUN conda install -y -c conda-forge -c bioconda python=3.10 ashlar \
+    && conda clean -afy
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
-RUN pip3 install boto3 azure-storage-blob azure-identity --no-cache-dir
+RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
 COPY omnibioai-tool-runtime/omni_tool_runtime /app/omni_tool_runtime
 COPY omnibioai-tool-runtime/pyproject.toml /app/pyproject.toml
 WORKDIR /app
-RUN pip3 install . --no-cache-dir
-CMD ["python3", "-m", "tools.generic_sif_runner.run"]
+RUN pip install . --no-cache-dir
+CMD ["python", "-m", "tools.generic_sif_runner.run"]

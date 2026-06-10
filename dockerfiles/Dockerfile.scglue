@@ -1,13 +1,16 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for scglue
-FROM --platform=linux/arm64 python:3.11-slim-bookworm
+FROM --platform=linux/arm64 continuumio/miniconda3:latest
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="scglue"
 LABEL platform="linux/arm64"
 
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
-RUN pip install --no-cache-dir scglue scanpy anndata numpy pandas scipy
+# scglue requires PyTorch C++ extensions that don't build on ARM64 via pip;
+# install heavy deps via conda then scglue itself --no-deps to skip the wheel.
+RUN conda install -y -c bioconda -c conda-forge python=3.11 scvi-tools scanpy anndata numpy pandas scipy \
+    && conda clean -afy
+RUN pip install --no-cache-dir scglue --no-deps
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

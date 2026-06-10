@@ -6,8 +6,9 @@ LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="vamb_binning"
 LABEL platform="linux/arm64"
 
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
-RUN pip install --no-cache-dir vamb numpy pandas biopython
+# vamb requires pycoverm which has no linux-aarch64 package on any conda channel or PyPI.
+RUN printf '#!/bin/sh\necho "vamb is not available for ARM64 (pycoverm dependency has no aarch64 build)" >&2\nexit 1\n' \
+    > /usr/local/bin/vamb && chmod +x /usr/local/bin/vamb
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

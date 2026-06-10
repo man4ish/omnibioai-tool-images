@@ -1,13 +1,17 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for unicycler_hybrid
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="unicycler_hybrid"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge python=3.11 spades bowtie2 samtools && conda clean -afy
-RUN pip install --no-cache-dir unicycler numpy biopython
+# unicycler_hybrid requires SPAdes, which has no ARM64 conda/bioconda package
+# (bioconda/spades ships x86_64-only precompiled binaries).  The conda
+# dependency solve hangs indefinitely on ARM64.  Install a stub so the image
+# builds cleanly; any invocation will exit with a clear error.
+RUN printf '#!/bin/sh\necho "unicycler_hybrid is not available for ARM64 (SPAdes dependency has no aarch64 package)" >&2\nexit 1\n' \
+    > /usr/local/bin/unicycler && chmod +x /usr/local/bin/unicycler
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

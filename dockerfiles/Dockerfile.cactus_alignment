@@ -6,9 +6,7 @@ LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="cactus_alignment"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c conda-forge mamba && \
-    mamba install -y -c bioconda -c conda-forge python=3.11 cactus && \
-    conda clean -afy
+RUN conda install -y -c bioconda -c conda-forge python=3.11 cactus && conda clean -afy
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

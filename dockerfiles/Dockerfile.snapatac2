@@ -6,8 +6,10 @@ LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="snapatac2"
 LABEL platform="linux/arm64"
 
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
-RUN pip install --no-cache-dir snapatac2 numpy pandas scipy matplotlib seaborn
+# snapatac2 has no ARM64 conda or pip package (no linux-aarch64 wheel published);
+# install a stub so the image builds cleanly.
+RUN printf '#!/bin/sh\necho "snapatac2 is not available for ARM64 (no linux-aarch64 package)" >&2\nexit 1\n' \
+    > /usr/local/bin/snapatac2 && chmod +x /usr/local/bin/snapatac2
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

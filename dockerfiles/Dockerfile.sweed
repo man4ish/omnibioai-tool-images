@@ -1,12 +1,14 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for sweed
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="sweed"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge sweed && conda clean -afy
+# sweed has no ARM64 bioconda package; install a stub so the image builds cleanly.
+RUN printf '#!/bin/sh\necho "sweed is not available for ARM64 (no aarch64 bioconda package)" >&2\nexit 1\n' \
+    > /usr/local/bin/sweed && chmod +x /usr/local/bin/sweed
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

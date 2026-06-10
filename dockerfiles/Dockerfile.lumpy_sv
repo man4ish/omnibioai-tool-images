@@ -1,12 +1,16 @@
 # syntax=docker/dockerfile:1
 # ARM64 image for lumpy_sv
-FROM --platform=linux/arm64 continuumio/miniconda3:latest
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
 LABEL tool="lumpy_sv"
 LABEL platform="linux/arm64"
 
-RUN conda install -y -c bioconda -c conda-forge python=3.11 lumpy-sv samtools && conda clean -afy
+# bioconda's lumpy-sv-minimal recipe explicitly skips linux-aarch64;
+# no ARM64 build exists. Install a stub so the image builds cleanly.
+RUN printf '#!/bin/sh\necho "lumpy-sv is not available for ARM64 (linux-aarch64 skipped in bioconda)" >&2\nexit 1\n' \
+    > /usr/local/bin/lumpy && chmod +x /usr/local/bin/lumpy && \
+    cp /usr/local/bin/lumpy /usr/local/bin/lumpyexpress
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools

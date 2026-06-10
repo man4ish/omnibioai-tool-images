@@ -1,16 +1,14 @@
 # syntax=docker/dockerfile:1
-# ARM64 image for totalvi
+# ARM64 image for cellbender
 FROM --platform=linux/arm64 continuumio/miniconda3:latest
 
 LABEL maintainer="OmniBioAI <team@omnibioai.io>"
-LABEL tool="totalvi"
+LABEL tool="cellbender"
 LABEL platform="linux/arm64"
 
-# totalvi (part of scvi-tools) requires PyTorch C++ extensions that don't build on ARM64 via pip;
-# install heavy deps via conda then scvi-tools itself --no-deps to skip the wheel.
-RUN conda install -y -c bioconda -c conda-forge python=3.11 scvi-tools scanpy anndata numpy pandas scipy \
+RUN conda install -y -c conda-forge python=3.11 \
     && conda clean -afy
-RUN pip install --no-cache-dir scvi-tools --no-deps
+RUN pip install --no-cache-dir cellbender --no-deps
 # ── OmniBioAI tool runtime ─────────────────────────────────────────────────
 RUN pip install boto3 azure-storage-blob azure-identity --no-cache-dir
 COPY omnibioai-tool-runtime/tools /app/tools
