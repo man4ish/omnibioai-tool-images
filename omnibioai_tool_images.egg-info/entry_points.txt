@@ -1,0 +1,2 @@
+[console_scripts]
+omnibioai-build = scripts.build_orchestrator:main
