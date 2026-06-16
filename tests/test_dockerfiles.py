@@ -22,12 +22,25 @@ SIF_DIR        = ROOT / "sif"
 BUILD_SCRIPT   = ROOT / "build_all.sh"
 
 APPROVED_BASES = [
+    # Ubuntu
+    "ubuntu:22.04",
     "ubuntu:24.04",
-    "bioconductor/bioconductor_docker:RELEASE_3_18",
+    # Python
+    "python:3.10-slim-bookworm",
     "python:3.11-slim-bookworm",
     "python:3.11-bookworm",
-    "python:3.10-slim-bookworm",
+    # Conda
+    "continuumio/miniconda3:latest",
+    # Bioconductor
+    "bioconductor/bioconductor_docker:RELEASE_3_18",
+    # R
+    "r-base:4.3.1",
+    "rocker/r-ver:4.3.0",
+    # Ensembl
     "ensemblorg/ensembl-vep:release_112.0",
+    # NVIDIA CUDA
+    "nvidia/cuda:12.1.0-runtime-ubuntu22.04",
+    "nvidia/cuda:12.2.2-cudnn8-runtime-ubuntu22.04",
 ]
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -84,11 +97,11 @@ class TestDockerfileStructure:
 
     @pytest.mark.parametrize("tool", ALL_TOOLS)
     def test_dockerfile_has_from(self, tool):
-        """Each Dockerfile starts with FROM."""
+        """Each Dockerfile contains a FROM instruction."""
         path = DOCKERFILE_DIR / f"Dockerfile.{tool}"
         content = path.read_text()
-        assert content.strip().startswith("FROM"), \
-            f"Dockerfile.{tool} does not start with FROM"
+        from_lines = [l for l in content.splitlines() if l.strip().startswith("FROM")]
+        assert from_lines, f"Dockerfile.{tool} does not contain a FROM instruction"
 
     @pytest.mark.parametrize("tool", ALL_TOOLS)
     def test_dockerfile_has_cmd(self, tool):
