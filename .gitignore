@@ -12,3 +12,4 @@ dockerfiles/obsolete/
 .coverage
 coverage.json
 tests/__pycache__/
+tests/__pycache__/
