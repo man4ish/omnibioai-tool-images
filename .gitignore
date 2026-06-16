@@ -11,3 +11,4 @@ sif/
 dockerfiles/obsolete/
 .coverage
 coverage.json
+tests/__pycache__/
